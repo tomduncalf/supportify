@@ -1,4 +1,5 @@
-## Supportify
+
+# Supportify
 
 Support the artists you listen to on Spotify by buying their music on Bandcamp
 
