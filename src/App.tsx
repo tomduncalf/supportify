@@ -1,13 +1,24 @@
-import { Table, TableRow, TableBody, TableCell, Grid, Select, Button, FormControl, InputLabel, MenuItem } from "@material-ui/core";
+import {
+  Table,
+  TableRow,
+  TableBody,
+  TableCell,
+  Grid,
+  Select,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem
+} from "@material-ui/core";
 import * as React from "react";
 import SpotifyWebApi from "spotify-web-api-js";
 
 const initialState = {
   authenticated: false,
   limit: 20,
-  timeRange: 'medium_term',
+  timeRange: "medium_term",
   topArtists: undefined as SpotifyApi.UsersTopArtistsResponse | undefined,
-  topTracks: undefined as SpotifyApi.UsersTopTracksResponse | undefined,
+  topTracks: undefined as SpotifyApi.UsersTopTracksResponse | undefined
 };
 
 class App extends React.Component<{}, typeof initialState> {
@@ -44,8 +55,14 @@ class App extends React.Component<{}, typeof initialState> {
   getData = async () => {
     try {
       const [topArtists, topTracks] = await Promise.all([
-        this.spotifyApi.getMyTopArtists({ time_range: this.state.timeRange, limit: this.state.limit }),
-        this.spotifyApi.getMyTopTracks({ time_range: this.state.timeRange, limit: this.state.limit }),
+        this.spotifyApi.getMyTopArtists({
+          time_range: this.state.timeRange,
+          limit: this.state.limit
+        }),
+        this.spotifyApi.getMyTopTracks({
+          time_range: this.state.timeRange,
+          limit: this.state.limit
+        })
       ]);
 
       this.setState({ topArtists, topTracks });
@@ -67,13 +84,13 @@ class App extends React.Component<{}, typeof initialState> {
           value={this.state.timeRange}
           onChange={this.handleTimeRangeChange}
           inputProps={{
-            name: 'time-range',
+            name: "time-range"
           }}
           autoWidth
         >
-          <MenuItem value='short_term'>Short term</MenuItem>
-          <MenuItem value='medium_term'>Medium term</MenuItem>
-          <MenuItem value='long_term'>Long term</MenuItem>
+          <MenuItem value="short_term">Short term</MenuItem>
+          <MenuItem value="medium_term">Medium term</MenuItem>
+          <MenuItem value="long_term">Long term</MenuItem>
         </Select>
       </FormControl>
 
@@ -83,14 +100,14 @@ class App extends React.Component<{}, typeof initialState> {
           value={this.state.limit}
           onChange={this.handleLimitChange}
           inputProps={{
-            name: 'limit',
+            name: "limit"
           }}
           autoWidth
         >
-          <MenuItem value='10'>10</MenuItem>
-          <MenuItem value='20'>20</MenuItem>
-          <MenuItem value='35'>35</MenuItem>
-          <MenuItem value='50'>50</MenuItem>
+          <MenuItem value="10">10</MenuItem>
+          <MenuItem value="20">20</MenuItem>
+          <MenuItem value="35">35</MenuItem>
+          <MenuItem value="50">50</MenuItem>
         </Select>
       </FormControl>
     </Grid>
@@ -98,11 +115,13 @@ class App extends React.Component<{}, typeof initialState> {
 
   handleTimeRangeChange = (timeRange: React.ChangeEvent<HTMLSelectElement>) => {
     this.setState({ timeRange: timeRange.target.value }, () => this.getData());
-  }
+  };
 
   handleLimitChange = (limit: React.ChangeEvent<HTMLSelectElement>) => {
-    this.setState({ limit: parseInt(limit.target.value) }, () => this.getData());
-  }
+    this.setState({ limit: parseInt(limit.target.value, 10) }, () =>
+      this.getData()
+    );
+  };
 
   renderTopArtists = () => {
     const { topArtists } = this.state;
@@ -195,7 +214,11 @@ class App extends React.Component<{}, typeof initialState> {
           </Button>
         )}
 
-        <p>Built by <a href="https://twitter.com/tomduncalf">Tom Duncalf</a>. Source code available on <a href="https://github.com/tomduncalf/supportify">Github</a>.</p>
+        <p>
+          Built by <a href="https://twitter.com/tomduncalf">Tom Duncalf</a>.
+          Source code available on{" "}
+          <a href="https://github.com/tomduncalf/supportify">Github</a>.
+        </p>
       </React.Fragment>
     );
   }
