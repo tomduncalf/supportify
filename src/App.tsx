@@ -41,8 +41,10 @@ class App extends React.Component<{}, typeof initialState> {
   }
 
   authenticate = () => {
+    const callbackUrl = 'https://tomduncalf.github.io/supportify/';
+
     window.location.href =
-      "https://accounts.spotify.com/authorize?client_id=af4c2b7672ec4460b8384790410d8658&redirect_uri=http:%2F%2Flocalhost:3000&scope=user-top-read&response_type=token";
+      `https://accounts.spotify.com/authorize?client_id=af4c2b7672ec4460b8384790410d8658&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=user-top-read&response_type=token`;
   };
 
   setupSpotifyClient = (accessToken: string) => {
