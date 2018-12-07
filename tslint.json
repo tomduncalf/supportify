@@ -7,7 +7,12 @@
       "coverage/lcov-report/*.js"
     ]
   },
+  "defaultSeverity": "warning",
   "rules": {
-    "member-access": false
+    "member-access": false,
+    "ordered-imports": false,
+    "jsx-no-lambda": false,
+    "curly": false,
+    "jsx-boolean-value": false
   }
 }

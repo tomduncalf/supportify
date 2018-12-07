@@ -1,9 +1,12 @@
+import { Table, TableRow, TableBody, TableCell, Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import * as React from "react";
 import SpotifyWebApi from "spotify-web-api-js";
 
 const initialState = {
-  authenticated: false
+  authenticated: false,
+  topArtists: undefined as SpotifyApi.UsersTopArtistsResponse | undefined,
+  topTracks: undefined as SpotifyApi.UsersTopTracksResponse | undefined
 };
 
 class App extends React.Component<{}, typeof initialState> {
@@ -38,21 +41,102 @@ class App extends React.Component<{}, typeof initialState> {
   };
 
   getData = async () => {
-    const [topArtists, topTracks] = await Promise.all([
-      this.spotifyApi.getMyTopArtists(),
-      this.spotifyApi.getMyTopTracks()
-    ]);
+    try {
+      const [topArtists, topTracks] = await Promise.all([
+        this.spotifyApi.getMyTopArtists(),
+        this.spotifyApi.getMyTopTracks()
+      ]);
 
-    console.log(topArtists, topTracks); // tslint:disable-line
+      this.setState({ topArtists, topTracks }); // tslint:disable-line
+    } catch (e) {
+      this.setState({ authenticated: false });
+    }
   };
 
-  public render() {
+  searchBandcamp = (query: string) => {
+    window.open("https://bandcamp.com/search?q=" + encodeURIComponent(query));
+  };
+
+  renderTopArtists = () => {
+    const { topArtists } = this.state;
+    if (!topArtists) return null;
+
+    return (
+      <Grid item xs={12} sm={6}>
+        <h2>Top Artists</h2>
+        <Table>
+          <TableBody>
+            {topArtists.items.map(artist => (
+              <TableRow>
+                <TableCell>{artist.name}</TableCell>
+                <TableCell numeric>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => this.searchBandcamp(`"${artist.name}"`)}
+                  >
+                    Search on Bandcamp
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Grid>
+    );
+  };
+
+  renderTopTracks = () => {
+    const { topTracks } = this.state;
+    if (!topTracks) return null;
+
+    return (
+      <Grid item sm={12} md={6}>
+        <h2>Top Tracks</h2>
+        <Table>
+          <TableBody>
+            {topTracks.items.map(track => {
+              const artist = track.artists.map(a => a.name).join(", ");
+              const name = `${artist} — ${track.name}`;
+              const search = `"${track.name}" "${artist}"`;
+
+              return (
+                <TableRow key={name}>
+                  <TableCell>{name}</TableCell>
+                  <TableCell numeric>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => this.searchBandcamp(search)}
+                    >
+                      Search on Bandcamp
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </Grid>
+    );
+  };
+
+  render() {
     const { authenticated } = this.state;
 
     return (
-      <div>
+      <React.Fragment>
+        <h1>Supportify</h1>
+        <h2>
+          Support the artists you listen to on Spotify by buying their music on
+          Bandcamp
+        </h2>
+
         {authenticated ? (
-          "authenticated "
+          <Grid container spacing={24}>
+            {this.renderTopArtists()}
+            {this.renderTopTracks()}
+          </Grid>
         ) : (
           <Button
             variant="contained"
@@ -62,7 +146,7 @@ class App extends React.Component<{}, typeof initialState> {
             Authenticate with Spotify
           </Button>
         )}
-      </div>
+      </React.Fragment>
     );
   }
 }
